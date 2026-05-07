@@ -3,12 +3,12 @@
   --accent2:      #c084fc;
   --accent3:      #38bdf8;
   --gold:         #e8c97a;
- 
+
   --tank-color:   #38bdf8;
   --healer-color: #4ade80;
   --dps-color:    #f87171;
   --class-color:  #c084fc;
- 
+
   --font-display: 'MedievalSharp', serif;
   --font-body:    'IM Fell English', serif;
 }
@@ -34,13 +34,13 @@ body {
   border-bottom: 1px solid rgba(120,100,255,0.18);
   z-index: 100;
 }
- 
+
 .site-brand {
   font-family: var(--font-display);
   color: var(--gold) !important;
   letter-spacing: 0.08em;
 }
- 
+
 .active-link  { color: var(--accent2) !important; letter-spacing: 0.1em; }
 .muted-link   { color: #8884aa !important; letter-spacing: 0.1em; }
 .muted-link:hover { color: var(--accent2) !important; }
@@ -59,7 +59,7 @@ body {
   background: radial-gradient(ellipse, rgba(139,111,255,0.18) 0%, transparent 70%);
   pointer-events: none;
 }
- 
+
 .gradient-title {
   font-family: var(--font-display);
   background: linear-gradient(135deg, #f5dfa0 0%, var(--accent2) 60%, var(--accent3) 100%);
@@ -67,7 +67,7 @@ body {
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
- 
+
 .btn-glow {
   font-family: var(--font-display);
   font-size: 0.78rem;
@@ -83,7 +83,8 @@ body {
   transform: translateY(-2px);
   box-shadow: 0 0 36px rgba(139,111,255,0.5);
   color: #fff;
-  
+}
+
 .stats-section  { background: #11132a; border-color: rgba(120,100,255,0.18) !important; position: relative; z-index: 1; }
 .accent-text    { color: var(--accent2); }
 .gold-text      { color: var(--gold); font-family: var(--font-display); }
@@ -98,7 +99,7 @@ body {
   background: #11132a !important;
   border-color: rgba(120,100,255,0.18) !important;
 }
- 
+
 .job-card {
   background: #11132a;
   border: 1px solid rgba(120,100,255,0.18);
@@ -116,14 +117,14 @@ body {
   box-shadow: 0 0 24px rgba(139,111,255,0.3);
   color: #e2e0f5;
 }
- 
+
 .job-card-icon {
   width: 56px; height: 56px;
   object-fit: contain;
   margin-bottom: 0.75rem;
   filter: drop-shadow(0 0 8px rgba(139,111,255,0.4));
 }
- 
+
 .job-card-icon-placeholder {
   width: 56px; height: 56px;
   margin: 0 auto 0.75rem;
@@ -132,7 +133,7 @@ body {
   display: flex; align-items: center; justify-content: center;
   font-size: 1.4rem;
 }
- 
+
 .job-card-abbr {
   font-family: var(--font-display);
   font-size: 0.65rem;
@@ -141,7 +142,7 @@ body {
   text-transform: uppercase;
   margin-bottom: 0.2rem;
 }
- 
+
 .job-card-name {
   font-family: var(--font-display);
   font-size: 0.95rem;
@@ -153,12 +154,12 @@ body {
   background: linear-gradient(180deg, rgba(139,111,255,0.07) 0%, transparent 100%);
   position: relative; z-index: 1;
 }
- 
+
 .form-control:focus {
   box-shadow: 0 0 0 3px rgba(139,111,255,0.2) !important;
   border-color: var(--accent) !important;
 }
- 
+
 .filter-pill {
   font-family: var(--font-display);
   font-size: 0.68rem;
@@ -180,7 +181,7 @@ body {
   text-decoration: none;
 }
 .back-link:hover { color: var(--accent2); }
- 
+
 .detail-icon-wrap {
   width: 100px; height: 100px;
   background: #0d0e1e;
@@ -190,13 +191,13 @@ body {
   box-shadow: 0 0 24px rgba(139,111,255,0.3);
   flex-shrink: 0;
 }
- 
+
 .detail-icon {
   width: 72px; height: 72px;
   object-fit: contain;
   filter: drop-shadow(0 0 10px rgba(139,111,255,0.5));
 }
- 
+
 .section-heading {
   font-family: var(--font-display);
   font-size: 0.72rem;
