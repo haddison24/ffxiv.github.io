@@ -30,6 +30,15 @@ const ROLE_STYLES = {
   class:  { color: '#c084fc', label: 'Base Class' },
 };
 
+async function fetchJobActions(classJobIndex) {
+  const fields = 'Name,Description,ActionCategory,Icon,ClassJobLevel';
+  const url = `https://v2.xivapi.com/api/search?sheets=Action&query=ClassJob=${classJobIndex}+IsPlayerAction=true&fields=${encodeURIComponent(fields)}&limit=20`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`API error: ${res.status}`);
+  const data = await res.json();
+  return (data.results || []).filter(r => r.fields?.Name && r.fields.Name.trim() !== '');
+}
+
 async function init() {
   const root   = document.getElementById('detail-root');
   const params = new URLSearchParams(window.location.search);
@@ -44,13 +53,69 @@ async function init() {
     const job = await fetchJobById(id);
     document.title = `${job.fields?.Name || 'Job'} — XIV Job Compendium`;
     root.innerHTML = '';
-    root.appendChild(renderDetail(job));
+
+    const wrap = renderDetail(job);
+    root.appendChild(wrap);
+
+    const jobIndex = job.fields?.JobIndex ?? job.row_id;
+    loadActions(jobIndex, wrap);
+
   } catch (err) {
     root.innerHTML = `<div class="alert alert-danger mt-4">Failed to load job: ${err.message}</div>`;
   }
 }
 
 init();
+
+async function loadActions(jobIndex, wrap) {
+  const actionsSection = wrap.querySelector('#actions-section');
+  const actionsGrid    = wrap.querySelector('#actions-grid');
+  if (!actionsSection || !actionsGrid) return;
+
+  try {
+    const actions = await fetchJobActions(jobIndex);
+
+    if (actions.length === 0) {
+      actionsSection.innerHTML = '';
+      return;
+    }
+
+    actionsGrid.innerHTML = '';
+    actionsSection.querySelector('p.section-heading').style.display = 'block';
+
+    for (const action of actions) {
+      const f     = action.fields || {};
+      const name  = f.Name || 'Unknown';
+      const desc  = f.Description || 'No description available.';
+      const level = f.ClassJobLevel || '?';
+      const icon  = f.Icon ? iconUrl(f.Icon) : null;
+
+      const col = document.createElement('div');
+      col.className = 'col-12 col-md-6';
+      col.innerHTML = `
+        <div class="surface-card border rounded-3 p-3 h-100 d-flex gap-3 align-items-start">
+          ${icon
+            ? `<img src="${icon}" alt="${name}" width="40" height="40" style="flex-shrink:0;filter:drop-shadow(0 0 6px rgba(139,111,255,0.4))" onerror="this.style.display='none'">`
+            : `<div style="width:40px;height:40px;flex-shrink:0;background:#181a38;border-radius:6px;display:flex;align-items:center;justify-content:center">⚔</div>`
+          }
+          <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <span class="fw-semibold" style="font-family:var(--font-display)">${name}</span>
+              <span class="badge rounded-pill" style="background:#181a38;color:#8884aa;font-size:0.65rem">Lv ${level}</span>
+            </div>
+            <p class="small text-secondary mb-0" style="line-height:1.5">${desc}</p>
+          </div>
+        </div>
+      `;
+      actionsGrid.appendChild(col);
+    }
+
+  } catch (err) {
+    if (actionsSection) {
+      actionsSection.innerHTML = `<p class="text-secondary small fst-italic">Could not load abilities.</p>`;
+    }
+  }
+}
 
 function renderDetail(job) {
   const f     = job.fields || {};
@@ -87,11 +152,8 @@ function renderDetail(job) {
 
   const wrap = document.createElement('div');
   wrap.innerHTML = `
-
-    <!-- Back link -->
     <a href="search.html" class="back-link d-inline-flex align-items-center gap-2 mb-4">← Back to Search</a>
 
-    <!-- Hero card -->
     <div class="surface-card border rounded-3 p-4 mb-4 d-flex align-items-center gap-4 flex-wrap">
       <div class="detail-icon-wrap">
         ${iconHtml}
@@ -107,7 +169,6 @@ function renderDetail(job) {
       </div>
     </div>
 
-    <!-- Base Stats -->
     ${stats.length > 0 ? `
     <p class="section-heading">Base Stats</p>
     <div class="row g-3 mb-4">
@@ -122,7 +183,6 @@ function renderDetail(job) {
     </div>
     ` : ''}
 
-    <!-- Details -->
     <p class="section-heading">Details</p>
     <div class="row g-3 mb-4">
       <div class="col-6 col-md-3">
@@ -151,13 +211,22 @@ function renderDetail(job) {
       </div>
     </div>
 
-    <!-- Stat Bars -->
     ${stats.length > 0 ? `
     <p class="section-heading">Stat Distribution</p>
     <div class="surface-card border rounded-3 p-4 mb-4">
       ${buildStatBars(stats)}
     </div>
     ` : ''}
+
+    <div id="actions-section">
+      <p class="section-heading">Abilities</p>
+      <div class="row g-3 mb-4" id="actions-grid">
+        <div class="col-12 text-center py-3 text-secondary">
+          <div class="spinner-border spinner-border-sm mb-2" role="status"></div>
+          <p class="fst-italic small">Loading abilities…</p>
+        </div>
+      </div>
+    </div>
   `;
 
   return wrap;
