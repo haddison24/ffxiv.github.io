@@ -30,9 +30,9 @@ const ROLE_STYLES = {
   class:  { color: '#c084fc', label: 'Base Class' },
 };
 
-async function fetchJobActions(classJobIndex) {
-  const fields = 'Name,Icon,ClassJobLevel,ClassJobCategory';
-  const url = `https://v2.xivapi.com/api/search?sheets=Action&query=ClassJob=${classJobIndex}+IsPlayerAction=true&fields=${encodeURIComponent(fields)}&limit=20`;
+async function fetchJobActions(classJobRowId, classJobIndex) {
+  const fields = 'Name,Icon,ClassJobLevel,ClassJob';
+  const url = `https://v2.xivapi.com/api/search?sheets=Action&query=ClassJob=${classJobRowId}+IsPlayerAction=true&fields=${encodeURIComponent(fields)}&limit=20`;
   const res = await fetch(url);
   if (!res.ok) throw new Error(`API error: ${res.status}`);
   const data = await res.json();
@@ -72,8 +72,9 @@ async function init() {
     const wrap = renderDetail(job);
     root.appendChild(wrap);
 
-    const jobIndex = job.fields?.JobIndex ?? job.row_id;
-    loadActions(jobIndex, wrap);
+    const jobRowId  = job.row_id;
+    const jobIndex  = job.fields?.JobIndex ?? job.row_id;
+    loadActions(jobRowId, jobIndex, wrap);
 
   } catch (err) {
     root.innerHTML = `<div class="alert alert-danger mt-4">Failed to load job: ${err.message}</div>`;
@@ -82,13 +83,13 @@ async function init() {
 
 init();
 
-async function loadActions(jobIndex, wrap) {
+async function loadActions(jobRowId, jobIndex, wrap) {
   const actionsSection = wrap.querySelector('#actions-section');
   const actionsGrid    = wrap.querySelector('#actions-grid');
   if (!actionsSection || !actionsGrid) return;
 
   try {
-    const actions = await fetchJobActions(jobIndex);
+    const actions = await fetchJobActions(jobRowId, jobIndex);
 
     if (actions.length === 0) {
       actionsSection.innerHTML = '';
