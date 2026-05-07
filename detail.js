@@ -31,7 +31,7 @@ const ROLE_STYLES = {
 };
 
 async function fetchJobActions(classJobIndex) {
-  const fields = 'Name,Icon,ClassJobLevel';
+  const fields = 'Name,Icon,ClassJobLevel,ClassJobCategory';
   const url = `https://v2.xivapi.com/api/search?sheets=Action&query=ClassJob=${classJobIndex}+IsPlayerAction=true&fields=${encodeURIComponent(fields)}&limit=20`;
   const res = await fetch(url);
   if (!res.ok) throw new Error(`API error: ${res.status}`);
@@ -43,7 +43,6 @@ async function fetchJobActions(classJobIndex) {
       const tr = await fetch(`https://v2.xivapi.com/api/sheet/ActionTransient/${action.row_id}?fields=Description`);
       if (tr.ok) {
         const td = await tr.json();
-        console.log('ActionTransient response:', JSON.stringify(td));
         action.fields.Description = td.fields?.Description || '';
       }
     } catch (e) {
@@ -103,7 +102,7 @@ async function loadActions(jobIndex, wrap) {
       const f     = action.fields || {};
       const name  = f.Name || 'Unknown';
       const desc  = f.Description && f.Description.trim() ? f.Description : 'No description available.';
-      const level = f.ClassJobLevel || '?';
+      const level = f.ClassJobLevel ?? f.Level ?? '?';
       const icon  = f.Icon ? iconUrl(f.Icon) : null;
 
       const col = document.createElement('div');
