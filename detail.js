@@ -31,7 +31,7 @@ const ROLE_STYLES = {
 };
 
 async function fetchJobActions(classJobIndex) {
-  const fields = 'Name,Description,ActionCategory,Icon,ClassJobLevel';
+  const fields = 'Name,Description,ActionTransient.Description,ActionCategory,Icon,ClassJobLevel';
   const url = `https://v2.xivapi.com/api/search?sheets=Action&query=ClassJob=${classJobIndex}+IsPlayerAction=true&fields=${encodeURIComponent(fields)}&limit=20`;
   const res = await fetch(url);
   if (!res.ok) throw new Error(`API error: ${res.status}`);
@@ -86,7 +86,7 @@ async function loadActions(jobIndex, wrap) {
     for (const action of actions) {
       const f     = action.fields || {};
       const name  = f.Name || 'Unknown';
-      const desc  = f.Description || 'No description available.';
+      const desc  = f['ActionTransient.Description'] || f.Description || 'No description available.';
       const level = f.ClassJobLevel || '?';
       const icon  = f.Icon ? iconUrl(f.Icon) : null;
 
