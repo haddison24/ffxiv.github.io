@@ -1,4 +1,4 @@
-const BASE = 'https:
+const BASE = 'https://v2.xivapi.com';
 
 async function fetchAllJobs() {
   const fields = 'Name,Abbreviation,ClassJobParent,JobIndex,LimitBreak1,BAttackPower,BHealingPower,BMagicDefense,BStrength,BMind,BDexterity,BIntelligence,BVitality,RowId';
