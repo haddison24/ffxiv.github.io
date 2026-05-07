@@ -44,7 +44,7 @@ async function init() {
   const params = new URLSearchParams(window.location.search);
   const id     = params.get('id');
 
-  if (!id) {
+  if (id === null || id === undefined) {
     root.innerHTML = `<div class="alert alert-danger mt-4">No job ID provided. <a href="search.html">Go back to search.</a></div>`;
     return;
   }
