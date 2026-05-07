@@ -34,12 +34,12 @@ async function init() {
   const root   = document.getElementById('detail-root');
   const params = new URLSearchParams(window.location.search);
   const id     = params.get('id');
- 
+
   if (!id) {
     root.innerHTML = `<div class="alert alert-danger mt-4">No job ID provided. <a href="search.html">Go back to search.</a></div>`;
     return;
   }
- 
+
   try {
     const job = await fetchJobById(id);
     document.title = `${job.fields?.Name || 'Job'} — XIV Job Compendium`;
@@ -51,7 +51,7 @@ async function init() {
 }
 
 init();
- 
+
 function renderDetail(job) {
   const f     = job.fields || {};
   const name  = f.Name  || 'Unknown Job';
@@ -59,7 +59,7 @@ function renderDetail(job) {
   const role  = classifyRole(job);
   const style = ROLE_STYLES[role] || ROLE_STYLES.class;
   const rowId = job.row_id;
- 
+
   const stats = [
     { label: 'Strength',     value: f.BStrength     || 0 },
     { label: 'Dexterity',    value: f.BDexterity    || 0 },
@@ -70,27 +70,27 @@ function renderDetail(job) {
     { label: 'Healing',      value: f.BHealingPower || 0 },
     { label: 'Mag Defense',  value: f.BMagicDefense || 0 },
   ].filter(s => s.value > 0);
- 
+
   const iconPath = f.ClassJobParent?.icon || null;
   const iconHtml = iconPath
     ? `<img src="${iconUrl(iconPath)}" alt="${name}" class="detail-icon"
            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
        <div style="display:none;font-size:2.5rem">⚔</div>`
     : `<div style="font-size:2.5rem">⚔</div>`;
- 
+
   const roleDesc = {
     tank:   `${name} stands at the frontlines, absorbing punishment and protecting the party.`,
     healer: `${name} sustains the party through battle, weaving healing and support magic.`,
     dps:    `${name} brings powerful offensive abilities to destroy enemies swiftly.`,
     class:  `${name} is a foundational class that can advance into a specialized job.`,
   }[role] || `${name} serves a unique role in Eorzea's battle system.`;
- 
+
   const wrap = document.createElement('div');
   wrap.innerHTML = `
- 
+
     <!-- Back link -->
     <a href="search.html" class="back-link d-inline-flex align-items-center gap-2 mb-4">← Back to Search</a>
- 
+
     <!-- Hero card -->
     <div class="surface-card border rounded-3 p-4 mb-4 d-flex align-items-center gap-4 flex-wrap">
       <div class="detail-icon-wrap">
@@ -106,7 +106,7 @@ function renderDetail(job) {
         <p class="fst-italic text-secondary mb-0">${roleDesc}</p>
       </div>
     </div>
- 
+
     <!-- Base Stats -->
     ${stats.length > 0 ? `
     <p class="section-heading">Base Stats</p>
@@ -121,7 +121,7 @@ function renderDetail(job) {
       `).join('')}
     </div>
     ` : ''}
- 
+
     <!-- Details -->
     <p class="section-heading">Details</p>
     <div class="row g-3 mb-4">
@@ -150,7 +150,7 @@ function renderDetail(job) {
         </div>
       </div>
     </div>
- 
+
     <!-- Stat Bars -->
     ${stats.length > 0 ? `
     <p class="section-heading">Stat Distribution</p>
@@ -159,10 +159,10 @@ function renderDetail(job) {
     </div>
     ` : ''}
   `;
- 
+
   return wrap;
 }
- 
+
 function buildStatBars(stats) {
   const max = Math.max(...stats.map(s => s.value));
   return stats.map(s => {
