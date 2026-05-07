@@ -23,7 +23,7 @@
   resize(); createStars(180); draw();
 })();
 
-let allJobs    = [];
+let allJobs    = [];      
 let currentTerm = '';
 let currentRole = 'all';
 let currentPage = 0;
@@ -56,16 +56,16 @@ async function init() {
     showError(`Failed to load jobs: ${err.message}`);
   }
 }
- 
+
 init();
- 
+
 function doSearch() {
   currentTerm = searchInput.value.trim();
   currentPage = 0;
   if (currentTerm) {
     doAPISearch();
   } else {
-    renderPage();
+    renderPage(); 
   }
 }
 
@@ -73,11 +73,15 @@ async function doAPISearch() {
   setLoading(true);
   errorEl.classList.add('d-none');
   try {
+    
     const data = await searchJobs(currentTerm);
     let results = (data.results || []).filter(r => r.fields?.Name);
+
+    
     if (currentRole !== 'all') {
       results = results.filter(r => classifyRole(r) === currentRole);
     }
+
     renderResults(results);
     resultsMeta.textContent = `${results.length} result${results.length !== 1 ? 's' : ''} for "${currentTerm}"`;
     paginationWrap.innerHTML = ''; 
@@ -98,32 +102,36 @@ function doReset() {
   errorEl.classList.add('d-none');
   renderPage();
 }
- 
+
 function renderPage() {
+  
   let filtered = allJobs;
- 
+
   if (currentRole !== 'all') {
     filtered = filtered.filter(r => classifyRole(r) === currentRole);
   }
+
   const total = filtered.length;
   const start = currentPage * PAGE_SIZE;
   const slice = filtered.slice(start, start + PAGE_SIZE);
- 
+
   resultsGrid.innerHTML = '';
- 
+
   if (slice.length === 0) {
     resultsGrid.innerHTML = `<div class="col-12 text-center py-5 text-secondary"><p class="fst-italic">No jobs found.</p></div>`;
     resultsMeta.textContent = '';
     paginationWrap.innerHTML = '';
     return;
   }
- 
+
   for (const row of slice) {
     resultsGrid.appendChild(buildJobCard(row));
   }
+
   resultsMeta.textContent = `Showing ${start + 1}–${Math.min(start + PAGE_SIZE, total)} of ${total} jobs`;
   renderPagination(total);
 }
+
 function renderResults(results) {
   resultsGrid.innerHTML = '';
   if (results.length === 0) {
@@ -134,38 +142,38 @@ function renderResults(results) {
     resultsGrid.appendChild(buildJobCard(row));
   }
 }
- 
+
 function renderPagination(total) {
   paginationWrap.innerHTML = '';
   const totalPages = Math.ceil(total / PAGE_SIZE);
   if (totalPages <= 1) return;
- 
+
   const prev = document.createElement('button');
   prev.className = 'page-btn';
   prev.textContent = '← Prev';
   prev.disabled = currentPage === 0;
   prev.onclick = () => { currentPage--; renderPage(); window.scrollTo(0,0); };
- 
+
   const info = document.createElement('span');
   info.style.cssText = 'font-family:var(--font-display);font-size:0.72rem;letter-spacing:0.08em;color:var(--text-muted);display:flex;align-items:center;padding:0 0.5rem;';
   info.textContent = `Page ${currentPage + 1} / ${totalPages}`;
- 
+
   const next = document.createElement('button');
   next.className = 'page-btn';
   next.textContent = 'Next →';
   next.disabled = currentPage >= totalPages - 1;
   next.onclick = () => { currentPage++; renderPage(); window.scrollTo(0,0); };
- 
+
   paginationWrap.append(prev, info, next);
 }
- 
+
 function setLoading(on) {
   if (on) {
     resultsGrid.innerHTML = `<div class="col-12 text-center py-5 text-secondary"><div class="spinner-border spinner-border-sm mb-2" role="status"></div><p class="fst-italic">Searching…</p></div>`;
     resultsMeta.textContent = '';
   }
 }
- 
+
 function showError(msg) {
   errorEl.textContent = msg;
   errorEl.classList.remove('d-none');
