@@ -2,12 +2,12 @@
   const canvas = document.getElementById('stars');
   const ctx = canvas.getContext('2d');
   let stars = [];
- 
+
   function resize() {
     canvas.width  = window.innerWidth;
     canvas.height = window.innerHeight;
   }
- 
+
   function createStars(n) {
     stars = [];
     for (let i = 0; i < n; i++) {
@@ -20,7 +20,7 @@
       });
     }
   }
- 
+
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     for (const s of stars) {
@@ -33,7 +33,7 @@
     }
     requestAnimationFrame(draw);
   }
- 
+
   resize();
   createStars(180);
   draw();
@@ -46,32 +46,36 @@ async function init() {
     dps:    document.getElementById('cards-dps'),
     class:  document.getElementById('cards-class'),
   };
- 
+
   const errorEl = document.getElementById('error-msg');
- 
+
   function showError(msg) {
     errorEl.textContent = msg;
     errorEl.classList.remove('d-none');
   }
- 
+
   function showLoadingFor(containerId) {
     const el = document.getElementById(containerId);
     if (el) el.innerHTML = `<div class="col-12 text-center py-4 text-secondary"><div class="spinner-border spinner-border-sm mb-2" role="status"></div><p class="fst-italic">Loading…</p></div>`;
   }
- 
+
   Object.values(containers).forEach(el => {
     if (el) el.innerHTML = `<div class="col-12 text-center py-4 text-secondary"><div class="spinner-border spinner-border-sm mb-2" role="status"></div><p class="fst-italic">Loading…</p></div>`;
   });
- 
+
   try {
     const rows = await fetchAllJobs();
     const valid = rows.filter(isValidJob);
+
+    
     const byRole = { tank: [], healer: [], dps: [], class: [] };
     for (const row of valid) {
       const role = classifyRole(row);
       if (byRole[role]) byRole[role].push(row);
     }
-  for (const [role, items] of Object.entries(byRole)) {
+
+    
+    for (const [role, items] of Object.entries(byRole)) {
       const el = containers[role];
       if (!el) continue;
       el.innerHTML = '';
@@ -83,22 +87,25 @@ async function init() {
         el.appendChild(buildJobCard(row));
       }
     }
+
+    
     const dpsCount     = byRole.dps.length;
     const supportCount = byRole.tank.length + byRole.healer.length;
     const totalJobs    = byRole.tank.length + byRole.healer.length + byRole.dps.length;
- 
+
     animateCount('stat-total',   totalJobs);
     animateCount('stat-dps',     dpsCount);
     animateCount('stat-support', supportCount);
- 
+
   } catch (err) {
     console.error(err);
-    showError(`Failed to load jobs: ${err.message}. Error`);
+    showError(`Failed to load jobs: ${err.message}. Make sure you have a network connection.`);
     Object.values(containers).forEach(el => { if (el) el.innerHTML = ''; });
   }
 }
+
 init();
- 
+
 function animateCount(id, target) {
   const el = document.getElementById(id);
   if (!el) return;
