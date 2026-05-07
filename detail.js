@@ -43,6 +43,7 @@ async function fetchJobActions(classJobIndex) {
       const tr = await fetch(`https://v2.xivapi.com/api/sheet/ActionTransient/${action.row_id}?fields=Description`);
       if (tr.ok) {
         const td = await tr.json();
+        console.log('ActionTransient response:', JSON.stringify(td));
         action.fields.Description = td.fields?.Description || '';
       }
     } catch (e) {
