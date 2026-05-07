@@ -61,7 +61,7 @@ function classifyRole(job) {
 }
 
 function isValidJob(row) {
-  return row.row_id > 0 && row.fields?.Name && row.fields.Name.trim() !== '';
+  return row.fields?.Name && row.fields.Name.trim() !== '' && row.fields.Name !== 'Adventurer';
 }
 
 function buildJobCard(row) {
